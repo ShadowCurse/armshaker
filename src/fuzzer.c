@@ -62,9 +62,9 @@ volatile sig_atomic_t last_insn_signum = 0;
 volatile sig_atomic_t executing_insn = 0;
 uint32_t insn_offset = 0;
 
-static uint8_t sig_stack_array[SIGSTKSZ];
+static uint8_t *sig_stack_array = NULL;
 stack_t sig_stack = {
-    .ss_size = SIGSTKSZ,
+    .ss_size = 0,
     .ss_sp = sig_stack_array,
 };
 
@@ -946,6 +946,9 @@ Ptrace options (only available with -p option):\n\
 
 int main(int argc, char **argv)
 {
+    sig_stack_array = malloc(SIGSTKSZ);
+    sig_stack.ss_size = SIGSTKSZ;
+
     uint32_t insn_range_start = INSN_RANGE_MIN;
     uint32_t insn_range_end = INSN_RANGE_MAX;
     uint64_t insn_mask = ~0;
